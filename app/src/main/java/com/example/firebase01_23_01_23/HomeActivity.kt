@@ -1,5 +1,6 @@
 package com.example.firebase01_23_01_23
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -16,8 +17,14 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         prefs = Prefs(this)
-        val email = prefs.leerEmail().toString()
-        binding.tvEmail.text = email
+        setListeners()
+
+    }
+
+    private fun setListeners() {
+        binding.btnAdd.setOnClickListener {
+            startActivity(Intent(this, CrearActivity::class.java))
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

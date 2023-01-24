@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FireBase01_23_01_23</string>
+    <string name="edad">Edad: %d años </string>
 </resources>
