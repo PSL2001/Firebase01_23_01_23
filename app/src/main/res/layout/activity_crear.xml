@@ -92,7 +92,7 @@
         app:layout_constraintTop_toTopOf="@+id/btnAceptar" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvEdad2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
