@@ -1,17 +1,45 @@
 package com.example.firebase01_23_01_23
 
+import android.app.Instrumentation.ActivityResult
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import com.example.firebase01_23_01_23.databinding.ActivityMainBinding
 import com.example.firebase01_23_01_23.prefs.Prefs
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
+
+    private val responseLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            val tarea = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+            try {
+                val cuenta = tarea.getResult(ApiException::class.java) //Aqui se guarda la cuenta que me valido
+                if (cuenta != null) {
+                    val credenciales = GoogleAuthProvider.getCredential(cuenta.idToken, null)
+                    FirebaseAuth.getInstance().signInWithCredential(credenciales).addOnCompleteListener() {
+                        if (it.isSuccessful) {
+                            prefs.guardarEmail(cuenta.email ?: "")
+                            irHome()
+                        } else {
+                            mostrarMensaje("Error al autenticar con Google")
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                println(e.message.toString())
+            }
+        }
+    }
+
+
     lateinit var binding: ActivityMainBinding
     private var email = ""
     private var password = ""
@@ -38,7 +66,8 @@ class MainActivity : AppCompatActivity() {
             .build()
         val googleClient = GoogleSignIn.getClient(this, googleConf)
         // Para que si cierro sesion me da a eleigr un usuario y no me valido con el ultimo
-           googleClient.signOut()
+        googleClient.signOut()
+        responseLauncher.launch(googleClient.signInIntent)
     }
 
     //--------------------------------------------
