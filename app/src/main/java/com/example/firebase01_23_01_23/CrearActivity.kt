@@ -46,7 +46,19 @@ class CrearActivity : AppCompatActivity() {
     }
 
     private fun guardarUsuario() {
+        if (errorEnDatos()) {
+            return
+        }
+    }
 
+    private fun errorEnDatos(): Boolean {
+        username = binding.etUserName.text.toString().trim()
+        if (username.length < 3) {
+            binding.etUserName.error = "El nombre de usuario debe tener al menos 3 caracteres"
+            return true
+        }
+
+        return false
     }
 
     private fun pintarEdad() {
