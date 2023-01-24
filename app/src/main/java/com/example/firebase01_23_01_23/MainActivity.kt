@@ -6,6 +6,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import com.example.firebase01_23_01_23.databinding.ActivityMainBinding
 import com.example.firebase01_23_01_23.prefs.Prefs
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
 
@@ -26,10 +28,30 @@ class MainActivity : AppCompatActivity() {
     private fun setListeners() {
         binding.btnRegistrar.setOnClickListener { registrar() }
         binding.btnLogin.setOnClickListener { login() }
+        binding.btnGoogle.setOnClickListener { registroGoogle() }
     }
 //--------------------------------------------
-    private fun login() {
+    private fun registroGoogle() {
+        val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("166281049177-60io4t1qs4jlhcssda8fldksused2t19.apps.googleusercontent.com")
+            .requestEmail()
+            .build()
+        val googleClient = GoogleSignIn.getClient(this, googleConf)
+        // Para que si cierro sesion me da a eleigr un usuario y no me valido con el ultimo
+           googleClient.signOut()
+    }
 
+    //--------------------------------------------
+    private fun login() {
+        if (!recogerDatos()) return
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener {
+            if (it.isSuccessful) {
+                prefs.guardarEmail(email)
+                irHome()
+            } else {
+                mostrarMensaje("Error al iniciar sesión")
+            }
+        }
     }
 //--------------------------------------------
     private fun registrar() {
