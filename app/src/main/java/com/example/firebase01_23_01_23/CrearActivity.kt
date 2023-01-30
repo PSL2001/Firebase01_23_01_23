@@ -1,5 +1,7 @@
 package com.example.firebase01_23_01_23
 
+import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.SeekBar
@@ -8,11 +10,14 @@ import com.example.firebase01_23_01_23.models.Usuarios
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.nio.channels.spi.AbstractSelectionKey
 
 class CrearActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCrearBinding
 
     private var db = Firebase.database
+
+    private var editar = false
 
     var username = ""
     var edad = 18
@@ -26,8 +31,13 @@ class CrearActivity : AppCompatActivity() {
         setContentView(binding.root)
         pintarEdad()
         setListeners()
+        cogerUsuario()
     }
-
+//-------------------------------------------------------------------------------------------------
+    private fun cogerUsuario() {
+        val usuario: Usuarios = getSerializable(intent, "usuario", Usuarios::class.java)
+    }
+//-------------------------------------------------------------------------------------------------
     private fun setListeners() {
         binding.btnCancelar.setOnClickListener {
             finish()
@@ -86,4 +96,13 @@ class CrearActivity : AppCompatActivity() {
         binding.tvEdad2.text = String.format(getString(R.string.edad), edad)
 
     }
+}
+
+private fun <T: java.io.Serializable?> getSerializable(intent: Intent, key: String, clase: Class<T>): T {
+    return if (Build.VERSION.SDK_INT >=Build.VERSION_CODES.TIRAMISU) {
+        intent.getSerializableExtra(key, clase)!!
+    } else {
+        intent.getSerializableExtra(key) as T
+    }
+
 }

@@ -63,9 +63,16 @@ class HomeActivity : AppCompatActivity() {
     private fun setRecycler() {
         var layoutManager = LinearLayoutManager(this)
         binding.recUsers.layoutManager = layoutManager
-        adapter = UsuariosAdapter(listaUsuarios) { onItemBorrar(it) }
+        adapter = UsuariosAdapter(listaUsuarios, { onItemBorrar(it) }) { onItemEditar(it) }
         binding.recUsers.adapter = adapter
 
+    }
+
+    private fun onItemEditar(usuario: Usuarios) {
+        val intent = Intent(this, CrearActivity::class.java).apply {
+            putExtra("usuario", usuario)
+        }
+        startActivity(intent)
     }
 
     private fun onItemBorrar(position: Int) {
