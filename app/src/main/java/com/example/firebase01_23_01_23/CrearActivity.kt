@@ -4,9 +4,16 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.SeekBar
 import com.example.firebase01_23_01_23.databinding.ActivityCrearBinding
+import com.example.firebase01_23_01_23.models.Usuarios
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class CrearActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCrearBinding
+
+    private var db = Firebase.database
+
     var username = ""
     var edad = 18
     var nombre = ""
@@ -46,8 +53,13 @@ class CrearActivity : AppCompatActivity() {
     }
 
     private fun guardarUsuario() {
-        if (errorEnDatos()) {
-            return
+        if (errorEnDatos()) return
+        //Los campos no estan vacios, vamos a guardar el usuario en realtime database
+        val usuario = Usuarios(nombre, apellidos, edad, username)
+        db = FirebaseDatabase.getInstance("https://fir-2023-78680-default-rtdb.europe-west1.firebasedatabase.app/")
+        val ref = db.getReference("usuarios")
+        ref.child(username).setValue(usuario).addOnSuccessListener {
+            finish()
         }
     }
 
@@ -57,7 +69,16 @@ class CrearActivity : AppCompatActivity() {
             binding.etUserName.error = "El nombre de usuario debe tener al menos 3 caracteres"
             return true
         }
-
+        nombre = binding.etNombre.text.toString().trim()
+        if (nombre.length < 3) {
+            binding.etNombre.error = "El nombre debe tener al menos 3 caracteres"
+            return true
+        }
+        apellidos = binding.etApellidos.text.toString().trim()
+        if (apellidos.length < 3) {
+            binding.etApellidos.error = "Los apellidos deben tener al menos 3 caracteres"
+            return true
+        }
         return false
     }
 
