@@ -63,11 +63,21 @@ class HomeActivity : AppCompatActivity() {
     private fun setRecycler() {
         var layoutManager = LinearLayoutManager(this)
         binding.recUsers.layoutManager = layoutManager
-        adapter = UsuariosAdapter(listaUsuarios)
+        adapter = UsuariosAdapter(listaUsuarios) { onItemBorrar(it) }
         binding.recUsers.adapter = adapter
 
     }
-//-------------------------------------------------------------------------------------------------
+
+    private fun onItemBorrar(position: Int) {
+        //Apuntamos al nodo que queremos borrar
+        db.getReference("usuarios").child(listaUsuarios[position].userName.toString()).removeValue()
+        listaUsuarios.removeAt(position)
+        adapter.notifyItemRemoved(position)
+        adapter.notifyItemRangeChanged(position, listaUsuarios.size)
+
+    }
+
+    //-------------------------------------------------------------------------------------------------
     private fun setListeners() {
         binding.btnAdd.setOnClickListener {
             startActivity(Intent(this, CrearActivity::class.java))

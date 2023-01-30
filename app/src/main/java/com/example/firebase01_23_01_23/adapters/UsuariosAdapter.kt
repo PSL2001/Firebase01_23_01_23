@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.firebase01_23_01_23.R
 import com.example.firebase01_23_01_23.models.Usuarios
 
-class UsuariosAdapter(var lista: List<Usuarios>): RecyclerView.Adapter<UsuariosViewHolder>() {
+class UsuariosAdapter(var lista: List<Usuarios>, val onItemBorrar: (Int) -> Unit): RecyclerView.Adapter<UsuariosViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsuariosViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.users_layout, parent, false)
         return UsuariosViewHolder(v)
@@ -17,6 +17,6 @@ class UsuariosAdapter(var lista: List<Usuarios>): RecyclerView.Adapter<UsuariosV
     }
 
     override fun onBindViewHolder(holder: UsuariosViewHolder, position: Int) {
-        holder.render(lista[position])
+        holder.render(lista[position], onItemBorrar)
     }
 }

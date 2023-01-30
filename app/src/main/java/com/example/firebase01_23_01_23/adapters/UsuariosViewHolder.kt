@@ -9,11 +9,15 @@ import com.example.firebase01_23_01_23.models.Usuarios
 class UsuariosViewHolder(v: View): RecyclerView.ViewHolder(v) {
     private val binding = UsersLayoutBinding.bind(v)
 
-    fun render(usuarios: Usuarios) {
+    fun render(usuarios: Usuarios, onItemBorrar: (Int) -> Unit) {
         binding.tvNombre.text = usuarios.nombre
         binding.tvApellidos.text = usuarios.apellidos
         binding.tvEdad.text = String.format(binding.tvEdad.context.getString(R.string.edad), usuarios.edad)
         binding.tvUserName.text = usuarios.userName
+
+        binding.btnBorrar.setOnClickListener {
+            onItemBorrar(adapterPosition)
+        }
     }
 
 }
