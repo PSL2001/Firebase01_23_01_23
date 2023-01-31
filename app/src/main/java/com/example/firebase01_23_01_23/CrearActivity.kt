@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.widget.SeekBar
 import com.example.firebase01_23_01_23.databinding.ActivityCrearBinding
 import com.example.firebase01_23_01_23.models.Usuarios
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.nio.channels.spi.AbstractSelectionKey
@@ -80,11 +80,41 @@ class CrearActivity : AppCompatActivity() {
         val usuario = Usuarios(nombre, apellidos, edad, username)
         db = FirebaseDatabase.getInstance("https://fir-2023-78680-default-rtdb.europe-west1.firebasedatabase.app/")
         val ref = db.getReference("usuarios")
-        ref.child(username).setValue(usuario).addOnSuccessListener {
-            finish()
+        if(!editar) {
+            //Vamos a verificar que el usuario no existe
+            existeUsername(usuario, ref)
+        } else {
+            ref.child(username).setValue(usuario).addOnSuccessListener {
+                finish()
+            }
         }
     }
+//-------------------------------------------------------------------------------------------------
+    private fun existeUsername(usuario: Usuarios, ref: DatabaseReference) {
+        val query = ref.orderByChild("userName").equalTo(usuario.userName).limitToFirst(1)
+        query.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists()) {
+                    //Podemos guardar el usuario no existe el username
+                    ref.child(usuario.userName.toString()).setValue(usuario).addOnSuccessListener {
+                        //El usuario se ha guardado correctamente
+                        finish()
+                    }
+                } else {
+                    //El usuario ya existe
+                    binding.etUserName.error = "El nombre de usuario ya existe"
+                    binding.etUserName.requestFocus()
+                }
+            }
 
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
+//-------------------------------------------------------------------------------------------------
     private fun errorEnDatos(): Boolean {
         username = binding.etUserName.text.toString().trim()
         if (username.length < 3) {
