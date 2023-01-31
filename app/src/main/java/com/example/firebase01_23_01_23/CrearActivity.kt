@@ -36,6 +36,18 @@ class CrearActivity : AppCompatActivity() {
 //-------------------------------------------------------------------------------------------------
     private fun cogerUsuario() {
         val usuario: Usuarios = getSerializable(intent, "usuario", Usuarios::class.java)
+        if (usuario != null) {
+            editar = true
+            binding.etUserName.setText(usuario.userName.toString())
+            //No queremos que el usuario pueda cambiar su nombre de usuario porque eso crearia un nuevo usuario
+            binding.etUserName.isEnabled = false
+            binding.etNombre.setText(usuario.nombre.toString())
+            binding.etApellidos.setText(usuario.apellidos.toString())
+            edad = usuario.edad?.toInt() ?: 18
+            binding.btnAceptar.text = "Editar"
+            binding.seekBar.progress = edad-18
+            pintarEdad()
+        }
     }
 //-------------------------------------------------------------------------------------------------
     private fun setListeners() {
@@ -97,11 +109,13 @@ class CrearActivity : AppCompatActivity() {
 
     }
 }
-
+//Funcion para poder pasar objetos serializables entre actividades en versiones anteriores a Android 13
 private fun <T: java.io.Serializable?> getSerializable(intent: Intent, key: String, clase: Class<T>): T {
+    //Devuelve el objeto serializable que se le pasa por parámetro segun la version de Android siendo mayor o igual a 13
     return if (Build.VERSION.SDK_INT >=Build.VERSION_CODES.TIRAMISU) {
         intent.getSerializableExtra(key, clase)!!
     } else {
+        //
         intent.getSerializableExtra(key) as T
     }
 
